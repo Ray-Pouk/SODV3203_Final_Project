@@ -11,8 +11,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.example.sodv3203_final_project.ui.AddCard.AddCardScreen
+import com.example.sodv3203_final_project.ui.HomePage.HomePageScreen
+import com.example.sodv3203_final_project.ui.LoadingPage.LoadingPageScreen
+import com.example.sodv3203_final_project.ui.LoginPage.LoginPageScreen
 import com.example.sodv3203_final_project.ui.OrderConfirm.OrderConfirmationScreen
 import com.example.sodv3203_final_project.ui.Product.ProductInsightScreen
+import com.example.sodv3203_final_project.ui.Product.ProductPageScreen
+import com.example.sodv3203_final_project.ui.RegisterPage.RegisterPageScreen
 import com.example.sodv3203_final_project.ui.theme.SODV3203_Final_ProjectTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,7 +26,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SODV3203_Final_ProjectTheme {
-                ProductInsightScreen()
+                ProductPageScreen()
             }
         }
     }
