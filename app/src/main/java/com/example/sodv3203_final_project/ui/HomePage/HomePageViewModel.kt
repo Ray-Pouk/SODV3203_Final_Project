@@ -1,30 +1,63 @@
 package com.example.sodv3203_final_project.ui.HomePage
 
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import androidx.lifecycle.viewModelScope
+import com.example.sodv3203_final_project.Data.StoreLocation
+import com.example.sodv3203_final_project.Data.StoreLocationDao
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
-data class MenuItem(
-    val id: Int,
-    val name: String,
-    val description: String,
-    val imageResId: Int
-)
+class HomePageViewModel(
+    private val storeLocationDao: StoreLocationDao
+) : ViewModel() {
 
-class HomePageViewModel : ViewModel() {
-
-    private val _menuItems = MutableStateFlow<List<MenuItem>>(emptyList())
-    val menuItems: StateFlow<List<MenuItem>> = _menuItems
-
-    private val _locationInfo = MutableStateFlow("Tim Hortons - Open 6AM to 9PM")
-    val locationInfo: StateFlow<String> = _locationInfo
+    private val _storeLocations = MutableStateFlow<List<StoreLocation>>(emptyList())
+    val storeLocations: StateFlow<List<StoreLocation>> = _storeLocations
 
     init {
-        // Placeholder: Replace this with data from your database or API
-        _menuItems.value = listOf(
-            MenuItem(1, "Coffee", "Fresh brewed coffee", com.example.sodv3203_final_project.R.drawable.ic_launcher_foreground),
-            MenuItem(2, "Bagel", "Toasted bagel with cream cheese", com.example.sodv3203_final_project.R.drawable.ic_launcher_foreground),
-            MenuItem(3, "Breakfast Wrap", "Eggs, cheese, and sausage", com.example.sodv3203_final_project.R.drawable.ic_launcher_foreground)
-        )
+        viewModelScope.launch {
+            storeLocationDao.getAllStores().collect { locations ->
+                if (locations.isEmpty()) {
+                    insertSampleStores()
+                } else {
+                    _storeLocations.value = locations
+                }
+            }
+        }
+    }
+
+    private fun insertSampleStores() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val sampleStores = listOf(
+                StoreLocation(
+                    name = "Tim Hortons - Main Street",
+                    address = "123 Main St",
+                    city = "Halifax",
+                    postalCode = "B3J 1A1",
+                    phoneNumber = "(902) 123-4567"
+                ),
+                StoreLocation(
+                    name = "Tim Hortons - Waterfront",
+                    address = "456 Ocean Dr",
+                    city = "Halifax",
+                    postalCode = "B3J 2B2",
+                    phoneNumber = "(902) 234-5678"
+                ),
+                StoreLocation(
+                    name = "Tim Hortons - North End",
+                    address = "789 Gottingen St",
+                    city = "Halifax",
+                    postalCode = "B3K 3C3",
+                    phoneNumber = "(902) 345-6789"
+                )
+            )
+
+            sampleStores.forEach { storeLocationDao.insertStore(it) }
+
+            // Fetch the inserted data again on the main thread and update UI
+            val updatedStores = storeLocationDao.getAllStores().first()
+            _storeLocations.value = updatedStores
+        }
     }
 }

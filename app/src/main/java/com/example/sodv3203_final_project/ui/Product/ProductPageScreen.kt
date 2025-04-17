@@ -1,5 +1,6 @@
 package com.example.sodv3203_final_project.ui.Product
 
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,40 +11,43 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.sodv3203_final_project.Data.AppDatabase
+import com.example.sodv3203_final_project.Data.MenuItem
+import com.example.sodv3203_final_project.ProductPageViewModelFactory
 import com.example.sodv3203_final_project.R
 import com.example.sodv3203_final_project.ui.theme.TimsCream
 
-data class ProductItem(
-    val name: String,
-    val description: String,
-    val imageResId: Int
-)
-
-val sampleProducts = listOf(
-    ProductItem("Coffee", "Fresh brewed coffee", R.drawable.placeholder),
-    ProductItem("Bagel", "Toasted bagel with cream cheese", R.drawable.placeholder),
-    ProductItem("Breakfast Wrap", "Eggs, cheese, and sausage", R.drawable.placeholder)
-)
-
 @Composable
 fun ProductPageScreen(
-    products: List<ProductItem> = sampleProducts,
     onBack: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val MenuItemDao = AppDatabase.getDatabase(context).menuItemDao()
+
+    val viewModel: ProductPageViewModel = viewModel(
+        factory = ProductPageViewModelFactory(MenuItemDao)
+    )
+
+    // Observe the menu items
+    val menuItems = viewModel.menuItems.collectAsState().value
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(TimsCream)
             .padding(WindowInsets.systemBars.asPaddingValues())
     ) {
-        // Top Bar with Back Arrow and Centered Logo
+        // Top Bar with Back Arrow
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -69,13 +73,14 @@ fun ProductPageScreen(
             )
         }
 
+        // LazyColumn for displaying menu items
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(products) { product ->
+            items(menuItems) { product ->
                 ProductRowItem(product)
             }
         }
@@ -83,7 +88,7 @@ fun ProductPageScreen(
 }
 
 @Composable
-fun ProductRowItem(product: ProductItem) {
+fun ProductRowItem(product: MenuItem) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -99,7 +104,7 @@ fun ProductRowItem(product: ProductItem) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = product.imageResId),
+                painter = painterResource(id = product.imageResId), // This should be fine if imageResId is valid
                 contentDescription = product.name,
                 modifier = Modifier
                     .size(70.dp)
@@ -122,3 +127,5 @@ fun ProductRowItem(product: ProductItem) {
         }
     }
 }
+
+

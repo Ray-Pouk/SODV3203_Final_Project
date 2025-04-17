@@ -1,14 +1,22 @@
 package com.example.sodv3203_final_project.ui.RegisterPage
 
-import androidx.lifecycle.ViewModel
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.State
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.sodv3203_final_project.Data.AppDatabase
+import com.example.sodv3203_final_project.Data.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.State
 
-class RegisterPageViewModel : ViewModel() {
+class RegisterPageViewModel(application: Application) : AndroidViewModel(application)
+ {
 
-    private val _email = mutableStateOf("")
+     private val userDao = AppDatabase.getDatabase(application).userDao()
+
+     private val _email = mutableStateOf("")
     val email: State<String> = _email
 
     private val _password = mutableStateOf("")
@@ -17,25 +25,37 @@ class RegisterPageViewModel : ViewModel() {
     private val _fullName = mutableStateOf("")
     val fullName: State<String> = _fullName
 
-    // You can use a MutableStateFlow or LiveData for tracking UI state like success or error
     private val _registerState = MutableStateFlow<RegisterState>(RegisterState.Idle)
     val registerState: StateFlow<RegisterState> = _registerState
 
-    // Handle the registration process (this is where database insertion would go)
     fun registerUser() {
-        // Validate input
-        if (_fullName.value.isNotEmpty() && _email.value.isNotEmpty() && _password.value.isNotEmpty()) {
-            // Insert into database (leave blank for now)
-            // e.g., database.insertUser(_fullName.value, _email.value, _password.value)
+        viewModelScope.launch {
+            if (_fullName.value.isNotEmpty() && _email.value.isNotEmpty() && _password.value.isNotEmpty()) {
+                try {
+                    val existingUser = userDao.getUserByEmail(_email.value)
+                    if (existingUser != null) {
+                        _registerState.value = RegisterState.Error("Email is already in use.")
+                        return@launch
+                    }
 
-            // Simulate success
-            _registerState.value = RegisterState.Success("User registered successfully!")
-        } else {
-            _registerState.value = RegisterState.Error("All fields are required.")
+                    val user = User(
+                        fullName = _fullName.value,
+                        email = _email.value,
+                        password = _password.value,
+                        createdAt = System.currentTimeMillis()
+                    )
+
+                    userDao.insertUser(user)
+                    _registerState.value = RegisterState.Success("User registered successfully!")
+                } catch (e: Exception) {
+                    _registerState.value = RegisterState.Error("Registration failed: ${e.message}")
+                }
+            } else {
+                _registerState.value = RegisterState.Error("All fields are required.")
+            }
         }
     }
 
-    // Methods to update email, password, and full name
     fun onFullNameChanged(name: String) {
         _fullName.value = name
     }
@@ -48,7 +68,6 @@ class RegisterPageViewModel : ViewModel() {
         _password.value = password
     }
 
-    // Define states for registration success, error, and idle
     sealed class RegisterState {
         object Idle : RegisterState()
         data class Success(val message: String) : RegisterState()

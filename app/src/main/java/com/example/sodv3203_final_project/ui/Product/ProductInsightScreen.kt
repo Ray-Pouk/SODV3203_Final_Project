@@ -26,11 +26,15 @@ fun ProductInsightScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(40.dp)
     ) {
-        // Back Button and Title
+
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
         ) {
             IconButton(onClick = { /* Navigate Back */ }) {
                 Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -112,6 +116,7 @@ fun ProductInsightScreen() {
             modifier = Modifier.fillMaxWidth()
         )
 
+        // Spacer to push everything else up
         Spacer(modifier = Modifier.weight(1f))
 
         // Add to Order Button

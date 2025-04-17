@@ -11,15 +11,25 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.sodv3203_final_project.Data.AppDatabase
+import com.example.sodv3203_final_project.Data.StoreLocation
+import com.example.sodv3203_final_project.R
 
 @Composable
-fun HomePageScreen(viewModel: HomePageViewModel = viewModel()) {
-    val menuItems by viewModel.menuItems.collectAsState()
-    val locationInfo by viewModel.locationInfo.collectAsState()
+fun HomePageScreen() {
+    val context = LocalContext.current
+    val storeLocationDao = AppDatabase.getDatabase(context).storeLocationDao()
+
+    val homePageViewModel: HomePageViewModel = viewModel(
+        factory = HomePageViewModelFactory(storeLocationDao)
+    )
+
+    val storeLocations by homePageViewModel.storeLocations.collectAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -29,74 +39,62 @@ fun HomePageScreen(viewModel: HomePageViewModel = viewModel()) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp)
         ) {
-            // Banner Placeholder
-            Text(
-                text = "🔥 Limited Time Offers! 🔥",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-
-            // Location Image
+            // Banner Image / Offers
             Image(
-                painter = painterResource(id = com.example.sodv3203_final_project.R.drawable.ic_launcher_foreground), // Replace with actual image
-                contentDescription = "Location Image",
+                painter = painterResource(id = R.drawable.timhortons_logo), // Replace with your banner image
+                contentDescription = "Promotional Banner",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp)
+                    .height(160.dp)
+                    .padding(8.dp)
+                    .clip(RoundedCornerShape(12.dp))
             )
 
-            // Location Info
             Text(
-                text = locationInfo,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(vertical = 8.dp)
+                text = "📍 Find a Tim Hortons Near You!",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Menu Items
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxSize()
             ) {
-                items(menuItems) { item ->
+                items(storeLocations) { location ->
                     Card(
                         shape = RoundedCornerShape(12.dp),
                         elevation = CardDefaults.cardElevation(6.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
-                                shape = RoundedCornerShape(12.dp)
-                            )
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
                             modifier = Modifier
+                                .fillMaxWidth()
                                 .padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Image(
-                                painter = painterResource(id = item.imageResId),
-                                contentDescription = item.name,
+                                painter = painterResource(id = R.drawable.timhortons_logo), // Replace with your location image
+                                contentDescription = "Store Image",
                                 modifier = Modifier
                                     .size(64.dp)
                                     .clip(RoundedCornerShape(8.dp))
                             )
-                            Spacer(modifier = Modifier.width(16.dp))
+
+                            Spacer(modifier = Modifier.width(12.dp))
+
                             Column {
                                 Text(
-                                    text = item.name,
+                                    text = location.name,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
-                                Text(
-                                    text = item.description,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                                )
+                                Text(text = location.address)
+                                Text(text = "${location.city}, ${location.postalCode}")
+                                Text(text = "Phone: ${location.phoneNumber}")
+                                Text(text = "Open: 6:00 AM - 10:00 PM") // You can make this dynamic if needed
                             }
                         }
                     }
