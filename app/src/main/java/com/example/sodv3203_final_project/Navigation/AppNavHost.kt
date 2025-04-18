@@ -1,5 +1,7 @@
 package com.example.sodv3203_final_project.Navigation
 
+import CheckoutScreen
+import CheckoutViewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -12,8 +14,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.sodv3203_final_project.Data.AppDatabase
+import com.example.sodv3203_final_project.Factory.CheckoutViewModelFactory
 import com.example.sodv3203_final_project.Factory.ProductPageViewModelFactory
 import com.example.sodv3203_final_project.Navigation.NavigationRoutes
+import com.example.sodv3203_final_project.ui.AddCard.AddCardScreen
 import com.example.sodv3203_final_project.ui.HomePage.HomePageScreen
 import com.example.sodv3203_final_project.ui.LoadingPage.LoadingPageScreen
 import com.example.sodv3203_final_project.ui.LoadingPage.LoadingPageViewModel
@@ -96,7 +100,12 @@ fun AppNavHost(
                 ProductInsightScreen(
                     menuItem = menuItem,
                     viewModel = viewModel,
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    onAddComplete = {
+                        navController.navigate(NavigationRoutes.HomePage) {
+                            popUpTo(NavigationRoutes.HomePage) { inclusive = true }
+                        }
+                    }
                 )
             }
         }
@@ -113,6 +122,42 @@ fun AppNavHost(
                 }
             )
         }
+
+        composable(NavigationRoutes.Checkout) {
+            val context = LocalContext.current
+            val db = AppDatabase.getDatabase(context)
+            val viewModel: CheckoutViewModel = viewModel(
+                factory = CheckoutViewModelFactory(
+                    db.orderItemDao(),
+                    db.menuItemDao()
+                )
+            )
+
+            CheckoutScreen(
+                navController = navController,
+                cartItems = viewModel.cartItems,
+                onContinueClicked = {
+                    // You can add a route for payment later
+                }
+            )
+
+        }
+
+        composable(NavigationRoutes.AddCard) {
+            AddCardScreen(
+                onSubmit = { cardNumber, expiry, cvv ->
+                    // Handle submission here, maybe navigate to confirmation screen
+                },
+                onSwitchToPaypal = {
+                    // Handle PayPal option
+                },
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+
     }
 }
 

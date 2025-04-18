@@ -42,28 +42,33 @@ fun HomePageScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            // Banner Image / Offers
-            Image(
-                painter = painterResource(id = R.drawable.timhortons_logo), // Replace with your banner image
-                contentDescription = "Promotional Banner",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(160.dp)
-                    .padding(8.dp)
-                    .clip(RoundedCornerShape(12.dp))
-            )
-
-            Text(
-                text = "📍 Find a Tim Hortons Near You!",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-            )
-
+            // Main content (LazyColumn with categories)
             LazyColumn(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
             ) {
+                item {
+                    // Banner
+                    Image(
+                        painter = painterResource(id = R.drawable.timhortons_logo),
+                        contentDescription = "Promotional Banner",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(160.dp)
+                            .padding(8.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                    )
+
+                    Text(
+                        text = "📍 Find a Tim Hortons Near You!",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
+
                 items(menuCategories) { category ->
                     Card(
                         shape = RoundedCornerShape(12.dp),
@@ -103,6 +108,19 @@ fun HomePageScreen(navController: NavController) {
                         }
                     }
                 }
+            }
+
+            // View Cart Button
+            Button(
+                onClick = {
+                    navController.navigate(NavigationRoutes.Checkout)
+                          },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("View Cart")
             }
         }
     }

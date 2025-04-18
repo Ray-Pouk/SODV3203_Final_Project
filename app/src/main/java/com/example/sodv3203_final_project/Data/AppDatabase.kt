@@ -21,7 +21,7 @@ import com.example.sodv3203_final_project.Data.Orders.OrderItemDao
         MenuCategory::class,
         Rating::class
     ],
-    version = 4,
+    version = 5,
 
 )
 abstract class AppDatabase : RoomDatabase() {

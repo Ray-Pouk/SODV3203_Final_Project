@@ -1,5 +1,6 @@
 package com.example.sodv3203_final_project.ui.LoginPage
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,14 +24,24 @@ import com.example.sodv3203_final_project.ui.theme.TimsCream
 fun LoginPageScreen(
     navController: NavController,
     viewModel: LoginPageViewModel, // ✅ Accept ViewModel from AppNavHost
-    onLoginSuccess: () -> Unit = {},
-    onRegisterClicked: () -> Unit = {}
+    onLoginSuccess: () -> Unit = {}, // Callback when login is successful
+    onRegisterClicked: () -> Unit = {} // Callback for Register screen navigation
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     val loginMessage by viewModel.loginMessage.collectAsState()
     val loginSuccess by viewModel.loginSuccess.collectAsState()
+    val currentUserId by viewModel.currentUserId.collectAsState()
+
+    // Navigate to Home page when login is successful
+    LaunchedEffect(loginSuccess) {
+        if (loginSuccess) {
+            Log.d("LoginPageScreen", "Navigating to home. Current User ID: $currentUserId")
+            onLoginSuccess()
+            navController.navigate("home") // Adjust route name as per your app
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -53,11 +64,12 @@ fun LoginPageScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Email TextField
         OutlinedTextField(
             value = email,
             onValueChange = {
                 email = it
-                viewModel.onEmailChange(it)
+                viewModel.onEmailChange(it) // Update ViewModel's email state
             },
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
@@ -65,11 +77,12 @@ fun LoginPageScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        // Password TextField
         OutlinedTextField(
             value = password,
             onValueChange = {
                 password = it
-                viewModel.onPasswordChange(it)
+                viewModel.onPasswordChange(it) // Update ViewModel's password state
             },
             label = { Text("Password") },
             visualTransformation = PasswordVisualTransformation(),
@@ -78,9 +91,10 @@ fun LoginPageScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Login Button
         Button(
             onClick = {
-                viewModel.onLoginClick()
+                viewModel.onLoginClick() // Trigger login action in ViewModel
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
@@ -93,13 +107,14 @@ fun LoginPageScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        // Navigate to Register page
         TextButton(onClick = { onRegisterClicked() }) {
             Text("Don't have an account? Register", color = TimsRed)
         }
 
+        // Display login message if there is one (e.g., error)
         if (loginMessage.isNotEmpty()) {
             Text(loginMessage, color = MaterialTheme.colorScheme.error)
         }
     }
 }
-

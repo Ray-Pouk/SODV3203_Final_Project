@@ -21,7 +21,8 @@ import com.example.sodv3203_final_project.R
 fun ProductInsightScreen(
     menuItem: MenuItem,
     viewModel: ProductPageViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onAddComplete: () -> Unit // ⬅️ new
 ) {
     var selectedOption by remember { mutableStateOf("Medium") }
     var instructions by remember { mutableStateOf("") }
@@ -153,7 +154,7 @@ fun ProductInsightScreen(
 
             Button(
                 onClick = {
-                    println("Added $selectedOption ${menuItem.name} with instructions: $instructions")
+                    onAddComplete()
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(

@@ -20,12 +20,14 @@ class LoginPageViewModel(private val userDao: UserDao) : ViewModel() {
     val password: StateFlow<String> = _password
 
     private val _loginSuccess = MutableStateFlow(false)
-    val loginSuccess: StateFlow<Boolean> = _loginSuccess
+    val loginSuccess: StateFlow<Boolean> get() = _loginSuccess
 
     private val _loginMessage = MutableStateFlow("")
     val loginMessage: StateFlow<String> = _loginMessage
 
-    // Insert a dummy user (for testing purposes)
+    private val _currentUserId = MutableStateFlow<Int?>(null)
+    val currentUserId: StateFlow<Int?> get() = _currentUserId
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             userDao.insertDummyUser()
@@ -49,9 +51,13 @@ class LoginPageViewModel(private val userDao: UserDao) : ViewModel() {
                 // Successful login
                 _loginSuccess.value = true
                 _loginMessage.value = ""  // Clear any previous error message
+                _currentUserId.value = user.userId // Save the logged-in user's ID
+
+                // Log user ID
+                Log.d("LoginPageViewModel", "Login successful. User ID: ${user.userId}")
             } else {
                 // Invalid credentials
-                Log.d("LoginViewModel", "Invalid email or password")
+                Log.d("LoginPageViewModel", "Invalid email or password")
                 _loginSuccess.value = false
                 _loginMessage.value = "Incorrect email or password."
             }
