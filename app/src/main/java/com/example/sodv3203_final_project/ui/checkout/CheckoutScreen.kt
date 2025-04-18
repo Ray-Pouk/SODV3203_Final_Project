@@ -16,13 +16,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.sodv3203_final_project.Data.MenuItem
 
 @Composable
 fun CheckoutScreen(
     modifier: Modifier = Modifier,
-    cartItems: List<String> = listOf("Double Double", "Bagel with Cream Cheese", "Timbits"),
+    cartItems: List<MenuItem> = listOf(),
     onContinueClicked: () -> Unit = {}
 ) {
+    val subtotal = cartItems.sumOf { it.price }
+    val tax = subtotal * 0.13  // Example: 13% tax rate
+    val total = subtotal + tax
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -53,8 +58,8 @@ fun CheckoutScreen(
                             .padding(vertical = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(item)
-                        Text("$2.00")
+                        Text(item.name)
+                        Text("$${item.price}")
                     }
                 }
             }
@@ -63,10 +68,10 @@ fun CheckoutScreen(
 
             // Totals
             Column {
-                Text("Subtotal: $6.00")
-                Text("Tax: $0.78")
+                Text("Subtotal: $${"%.2f".format(subtotal)}")
+                Text("Tax: $${"%.2f".format(tax)}")
                 Text(
-                    "Total: $6.78",
+                    "Total: $${"%.2f".format(total)}",
                     style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.secondary)
                 )
             }

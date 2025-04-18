@@ -6,21 +6,17 @@ import androidx.room.*
 interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertUser(user: User): Long
+    fun insertUser(user: User)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertDummyUser() {
+        insertUser(User(fullName = "Test User", email = "test@example.com", password = "password123"))
+    }
 
     @Query("SELECT * FROM users WHERE email = :email")
     fun getUserByEmail(email: String): User?
-
-    @Transaction
-    fun insertDummyUser() {
-        val dummyUser = User(
-            fullName = "Test User",
-            email = "test@example.com",
-            password = "password"
-        )
-        insertUser(dummyUser)
-    }
 }
+
 
 
 

@@ -1,71 +1,63 @@
 package com.example.sodv3203_final_project.ui.RegisterPage
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sodv3203_final_project.Data.AppDatabase
-import com.example.sodv3203_final_project.Data.User
+import com.example.sodv3203_final_project.Data.UserRepository.UserRepository
+import com.example.sodv3203_final_project.Data.UserDao
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.State
+import kotlinx.coroutines.withContext
 
-class RegisterPageViewModel(application: Application) : AndroidViewModel(application)
- {
+class RegisterPageViewModel(application: Application) : AndroidViewModel(application) {
 
-     private val userDao = AppDatabase.getDatabase(application).userDao()
+    val fullName = mutableStateOf("")
+    val email = mutableStateOf("")
+    val password = mutableStateOf("")
 
-     private val _email = mutableStateOf("")
-    val email: State<String> = _email
-
-    private val _password = mutableStateOf("")
-    val password: State<String> = _password
-
-    private val _fullName = mutableStateOf("")
-    val fullName: State<String> = _fullName
-
+    // Use MutableStateFlow and StateFlow for registerState
     private val _registerState = MutableStateFlow<RegisterState>(RegisterState.Idle)
     val registerState: StateFlow<RegisterState> = _registerState
 
+    // Get UserDao from the database
+    private val userDao: UserDao = AppDatabase.getDatabase(application).userDao()
+
+    private val repository = UserRepository(userDao)
+
+    fun onFullNameChanged(newFullName: String) {
+        fullName.value = newFullName
+    }
+
+    fun onEmailChanged(newEmail: String) {
+        email.value = newEmail
+    }
+
+    fun onPasswordChanged(newPassword: String) {
+        password.value = newPassword
+    }
+
     fun registerUser() {
         viewModelScope.launch {
-            if (_fullName.value.isNotEmpty() && _email.value.isNotEmpty() && _password.value.isNotEmpty()) {
-                try {
-                    val existingUser = userDao.getUserByEmail(_email.value)
-                    if (existingUser != null) {
-                        _registerState.value = RegisterState.Error("Email is already in use.")
-                        return@launch
-                    }
-
-                    val user = User(
-                        fullName = _fullName.value,
-                        email = _email.value,
-                        password = _password.value,
-                        createdAt = System.currentTimeMillis()
-                    )
-
-                    userDao.insertUser(user)
-                    _registerState.value = RegisterState.Success("User registered successfully!")
-                } catch (e: Exception) {
-                    _registerState.value = RegisterState.Error("Registration failed: ${e.message}")
+            try {
+                val result = withContext(Dispatchers.IO) {
+                    repository.registerUser(fullName.value, email.value, password.value)
                 }
-            } else {
-                _registerState.value = RegisterState.Error("All fields are required.")
+                // Use Main context to update UI
+                withContext(Dispatchers.Main) {
+                    if (result) {
+                        _registerState.value = RegisterState.Success("Registration Successful!")
+                    } else {
+                        _registerState.value = RegisterState.Error("Registration Failed!")
+                    }
+                }
+            } catch (e: Exception) {
+                _registerState.value = RegisterState.Error("An error occurred: ${e.message}")
             }
         }
-    }
-
-    fun onFullNameChanged(name: String) {
-        _fullName.value = name
-    }
-
-    fun onEmailChanged(email: String) {
-        _email.value = email
-    }
-
-    fun onPasswordChanged(password: String) {
-        _password.value = password
     }
 
     sealed class RegisterState {

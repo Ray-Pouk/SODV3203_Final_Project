@@ -1,32 +1,35 @@
 package com.example.sodv3203_final_project
 
-import CheckoutScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.ui.Modifier
-import com.example.sodv3203_final_project.ui.AddCard.AddCardScreen
-import com.example.sodv3203_final_project.ui.HomePage.HomePageScreen
-import com.example.sodv3203_final_project.ui.LoadingPage.LoadingPageScreen
-import com.example.sodv3203_final_project.ui.LoginPage.LoginPageScreen
-import com.example.sodv3203_final_project.ui.OrderConfirm.OrderConfirmationScreen
-import com.example.sodv3203_final_project.ui.Product.ProductInsightScreen
-import com.example.sodv3203_final_project.ui.Product.ProductPageScreen
-import com.example.sodv3203_final_project.ui.RegisterPage.RegisterPageScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
+import com.example.sodv3203_final_project.Data.AppDatabase
+import com.example.sodv3203_final_project.Factory.LoginPageViewModelFactory
+import com.example.sodv3203_final_project.Navigation.AppNavHost
+import com.example.sodv3203_final_project.ui.LoginPage.LoginPageViewModel
 import com.example.sodv3203_final_project.ui.theme.SODV3203_Final_ProjectTheme
 
+// MainActivity.kt (or wherever you're calling AppNavHost)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        val db = AppDatabase.getDatabase(applicationContext)
+        val userDao = db.userDao()
+        val loginViewModelFactory = LoginPageViewModelFactory(userDao)
+
         setContent {
+            // Wrap the NavHost in your custom theme
             SODV3203_Final_ProjectTheme {
-                ProductPageScreen()
+                val loginViewModel: LoginPageViewModel = viewModel(factory = loginViewModelFactory)
+                val navController = rememberNavController()
+
+                AppNavHost(
+                    navController = navController,
+                    loginViewModel = loginViewModel // ViewModel is passed properly
+                )
             }
         }
     }

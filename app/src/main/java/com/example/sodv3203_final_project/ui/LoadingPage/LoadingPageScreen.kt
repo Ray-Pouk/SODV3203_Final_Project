@@ -1,33 +1,44 @@
-package com.example.sodv3203_final_project.ui.LoginPage
+package com.example.sodv3203_final_project.ui.LoadingPage
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import com.example.sodv3203_final_project.Navigation.NavigationRoutes
 import com.example.sodv3203_final_project.R
-import com.example.sodv3203_final_project.ui.theme.SODV3203_Final_ProjectTheme
+import com.example.sodv3203_final_project.ui.theme.TimsRed
+import com.example.sodv3203_final_project.ui.theme.TimsYellow
 
 @Composable
-fun LoginPageScreen(
-    onLoginSuccess: () -> Unit = {},
-    onRegisterClicked: () -> Unit = {}
+fun LoadingPageScreen(
+    navController: NavController,
+    viewModel: LoadingPageViewModel // Use the LoadingPageViewModel
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val progress by viewModel.progress.collectAsState()
+
+    // Navigate to the LoginPage once the progress reaches 100%
+    LaunchedEffect(progress) {
+        if (progress >= 0.99f) {
+            navController.navigate(NavigationRoutes.LoginPage) {
+                popUpTo("loading") { inclusive = true } // Remove LoadingPage from the back stack
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(TimsRed)  // Set the background color to TimsRed
             .padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -37,55 +48,26 @@ fun LoginPageScreen(
             painter = painterResource(id = R.drawable.timhortons_logo),
             contentDescription = "Tim Hortons Logo",
             modifier = Modifier
-                .height(100.dp)
-                .padding(bottom = 32.dp)
+                .height(250.dp)
+                .padding(bottom = 16.dp)
         )
 
-        Text(
-            text = "Welcome Back!",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.fillMaxWidth()
+        // Circular progress indicator with TimsYellow color
+        CircularProgressIndicator(
+            progress = progress,
+            modifier = Modifier
+                .size(100.dp)
+                .padding(16.dp),
+            color = TimsYellow,  // Set indicator color to TimsYellow
+            strokeWidth = 8.dp
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
-            onClick = { onLoginSuccess() },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
-        ) {
-            Text("Login")
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        TextButton(
-            onClick = { onRegisterClicked() }
-        ) {
-            Text("Don't have an account? Register")
-        }
+        Text(
+            text = "Loading...",
+            color = TimsYellow,  // Set text color to TimsYellow
+            style = MaterialTheme.typography.bodyLarge
+        )
     }
 }

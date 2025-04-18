@@ -1,8 +1,9 @@
-package com.example.sodv3203_final_project.ui.RegisterPage
+package com.example.sodv3203_final_project.Factory
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.sodv3203_final_project.ui.RegisterPage.RegisterPageViewModel
 
 class RegisterPageViewModelFactory(
     private val application: Application

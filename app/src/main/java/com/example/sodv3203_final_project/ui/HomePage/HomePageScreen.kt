@@ -1,7 +1,7 @@
 package com.example.sodv3203_final_project.ui.HomePage
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,12 +16,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.sodv3203_final_project.Data.AppDatabase
-import com.example.sodv3203_final_project.Data.StoreLocation
+import com.example.sodv3203_final_project.Factory.HomePageViewModelFactory
+import com.example.sodv3203_final_project.Navigation.NavigationRoutes
 import com.example.sodv3203_final_project.R
 
 @Composable
-fun HomePageScreen() {
+fun HomePageScreen(navController: NavController) {
     val context = LocalContext.current
     val storeLocationDao = AppDatabase.getDatabase(context).storeLocationDao()
 
@@ -68,6 +70,9 @@ fun HomePageScreen() {
                         elevation = CardDefaults.cardElevation(6.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         modifier = Modifier.fillMaxWidth()
+                            .clickable {
+                                navController.navigate(NavigationRoutes.ProductPage)
+                            }
                     ) {
                         Row(
                             modifier = Modifier
@@ -94,7 +99,7 @@ fun HomePageScreen() {
                                 Text(text = location.address)
                                 Text(text = "${location.city}, ${location.postalCode}")
                                 Text(text = "Phone: ${location.phoneNumber}")
-                                Text(text = "Open: 6:00 AM - 10:00 PM") // You can make this dynamic if needed
+                                Text(text = "Open: 6:00 AM - 10:00 PM")
                             }
                         }
                     }

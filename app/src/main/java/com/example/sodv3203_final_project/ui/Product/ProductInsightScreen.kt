@@ -13,120 +13,160 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.sodv3203_final_project.Data.MenuItem
 import com.example.sodv3203_final_project.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductInsightScreen() {
+fun ProductInsightScreen(
+    menuItem: MenuItem,
+    viewModel: ProductPageViewModel,
+    onBack: () -> Unit
+) {
     var selectedOption by remember { mutableStateOf("Medium") }
     var instructions by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
-    val options = listOf("Small", "Medium", "Large")
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(40.dp)
-    ) {
+    val basePrice = menuItem.price
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(0.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            IconButton(onClick = { /* Navigate Back */ }) {
-                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Iced Capp",
-                style = MaterialTheme.typography.headlineMedium
-            )
-        }
+    // Load sizes from DB on first composition
+    LaunchedEffect(menuItem.id) {
+        viewModel.loadSizeOptions(menuItem.id)
+    }
 
-        Text(
-            text = "Cold Beverage",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+    val sizeOptions by viewModel.customizations.collectAsState()
 
-        Spacer(modifier = Modifier.height(16.dp))
+    // Fallback to default sizes if no DB data
+    val options = if (sizeOptions.isNotEmpty()) {
+        sizeOptions.map { it.customizationName }
+    } else listOf("Small", "Medium", "Large")
 
-        // Product Image (Placeholder)
-        Image(
-            painter = painterResource(id = R.drawable.placeholder), // replace with real image
-            contentDescription = "Product Image",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(180.dp),
-            alignment = Alignment.Center,
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-        )
+    // Price adjustment logic: Small = +0, Medium = +0.60, Large = +1.20
+    val sizeOffset = when (selectedOption) {
+        "Small" -> 0.0
+        "Medium" -> 0.60
+        "Large" -> 1.20
+        else -> 0.0
+    }
 
-        Spacer(modifier = Modifier.height(16.dp))
+    val finalPrice = basePrice + sizeOffset
 
-        Text(
-            text = "A deliciously creamy iced cappuccino, perfect for any time of day.",
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Dropdown for size selection
-        Text(text = "Select Size", fontSize = 14.sp)
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
-        ) {
-            OutlinedTextField(
-                value = selectedOption,
-                onValueChange = {},
-                readOnly = true,
-                modifier = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth(),
-                label = { Text("Size") }
-            )
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                options.forEach { option ->
-                    DropdownMenuItem(
-                        text = { Text(option) },
-                        onClick = {
-                            selectedOption = option
-                            expanded = false
-                        }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = menuItem.name,
+                        style = MaterialTheme.typography.titleLarge
                     )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                )
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 24.dp, vertical = 16.dp)
+        ) {
+            Text(
+                text = menuItem.category,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Image(
+                painter = painterResource(id = menuItem.imageResId),
+                contentDescription = "Product Image",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp),
+                alignment = Alignment.Center
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = menuItem.description,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(text = "Select Size", fontSize = 14.sp)
+
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded }
+            ) {
+                OutlinedTextField(
+                    value = selectedOption,
+                    onValueChange = {},
+                    readOnly = true,
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
+                    label = { Text("Size") }
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    options.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(option) },
+                            onClick = {
+                                selectedOption = option
+                                expanded = false
+                            }
+                        )
+                    }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        // Custom Instructions Field
-        OutlinedTextField(
-            value = instructions,
-            onValueChange = { instructions = it },
-            label = { Text("Custom Instructions") },
-            modifier = Modifier.fillMaxWidth()
-        )
+            OutlinedTextField(
+                value = instructions,
+                onValueChange = { instructions = it },
+                label = { Text("Custom Instructions") },
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        // Spacer to push everything else up
-        Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-        // Add to Order Button
-        Button(
-            onClick = {
-                println("Added $selectedOption Iced Capp with instructions: $instructions")
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Add to Order")
+            Button(
+                onClick = {
+                    println("Added $selectedOption ${menuItem.name} with instructions: $instructions")
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text("Add to Order - $${"%.2f".format(finalPrice)}")
+            }
         }
     }
 }
+
+
+
+

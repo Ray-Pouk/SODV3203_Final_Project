@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sodv3203_final_project.Data.User
 import com.example.sodv3203_final_project.Data.UserDao
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -23,8 +25,9 @@ class LoginPageViewModel(private val userDao: UserDao) : ViewModel() {
     private val _loginMessage = MutableStateFlow("")
     val loginMessage: StateFlow<String> = _loginMessage
 
+    // Insert a dummy user (for testing purposes)
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             userDao.insertDummyUser()
         }
     }
@@ -38,20 +41,28 @@ class LoginPageViewModel(private val userDao: UserDao) : ViewModel() {
     }
 
     fun onLoginClick() {
-
         viewModelScope.launch {
-            val user = userDao.getUserByEmail(_email.value)
+            // Perform database query off the main thread
+            val user = getUserByEmail(_email.value)
 
             if (user != null && user.password == _password.value) {
-                // If the user is found and the passwords match, the login is successful
+                // Successful login
                 _loginSuccess.value = true
-                _loginMessage.value = "Login successful!"
+                _loginMessage.value = ""  // Clear any previous error message
             } else {
-                // If no matching user is found or the passwords don't match, show an error message
+                // Invalid credentials
                 Log.d("LoginViewModel", "Invalid email or password")
                 _loginSuccess.value = false
-                _loginMessage.value = "Invalid email or password."
+                _loginMessage.value = "Incorrect email or password."
             }
+        }
+    }
+
+    // Function to run the database query off the main thread
+    private suspend fun getUserByEmail(email: String): User? {
+        return withContext(Dispatchers.IO) {
+            // Perform the database query in a background thread
+            userDao.getUserByEmail(email)
         }
     }
 }
