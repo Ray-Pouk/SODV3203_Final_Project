@@ -2,62 +2,41 @@ package com.example.sodv3203_final_project.ui.HomePage
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.sodv3203_final_project.Data.StoreLocation
-import com.example.sodv3203_final_project.Data.StoreLocationDao
+import com.example.sodv3203_final_project.Data.MenuCategory
+import com.example.sodv3203_final_project.Data.MenuCategoryDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class HomePageViewModel(
-    private val storeLocationDao: StoreLocationDao
+    private val menuCategoryDao: MenuCategoryDao
 ) : ViewModel() {
 
-    private val _storeLocations = MutableStateFlow<List<StoreLocation>>(emptyList())
-    val storeLocations: StateFlow<List<StoreLocation>> = _storeLocations
+    private val _menuCategories = MutableStateFlow<List<MenuCategory>>(emptyList())
+    val menuCategories: StateFlow<List<MenuCategory>> = _menuCategories
 
     init {
         viewModelScope.launch {
-            storeLocationDao.getAllStores().collect { locations ->
-                if (locations.isEmpty()) {
-                    insertSampleStores()
+            menuCategoryDao.getAllCategories().collect { categories ->
+                if (categories.isEmpty()) {
+                    insertSampleCategories()
                 } else {
-                    _storeLocations.value = locations
+                    _menuCategories.value = categories
                 }
             }
         }
     }
 
-    private fun insertSampleStores() {
+    private fun insertSampleCategories() {
         viewModelScope.launch(Dispatchers.IO) {
-            val sampleStores = listOf(
-                StoreLocation(
-                    name = "Tim Hortons - Main Street",
-                    address = "123 Main St",
-                    city = "Halifax",
-                    postalCode = "B3J 1A1",
-                    phoneNumber = "(902) 123-4567"
-                ),
-                StoreLocation(
-                    name = "Tim Hortons - Waterfront",
-                    address = "456 Ocean Dr",
-                    city = "Halifax",
-                    postalCode = "B3J 2B2",
-                    phoneNumber = "(902) 234-5678"
-                ),
-                StoreLocation(
-                    name = "Tim Hortons - North End",
-                    address = "789 Gottingen St",
-                    city = "Halifax",
-                    postalCode = "B3K 3C3",
-                    phoneNumber = "(902) 345-6789"
-                )
+            val sampleCategories = listOf(
+                MenuCategory(name = "Beverages", description = "Hot and cold drinks"),
+                MenuCategory(name = "Breakfast", description = "Morning favorites"),
+                MenuCategory(name = "Bakery", description = "Freshly baked goods"),
+                MenuCategory(name = "Lunch", description = "Sandwiches and wraps")
             )
-
-            sampleStores.forEach { storeLocationDao.insertStore(it) }
-
-            // Fetch the inserted data again on the main thread and update UI
-            val updatedStores = storeLocationDao.getAllStores().first()
-            _storeLocations.value = updatedStores
+            sampleCategories.forEach { menuCategoryDao.insertCategory(it) }
+            _menuCategories.value = menuCategoryDao.getAllCategories().first()
         }
     }
 }

@@ -18,6 +18,9 @@
         @Query("SELECT * FROM menu_items")
         fun getAllMenuItemsOnce(): List<MenuItem>
 
+        @Query("SELECT * FROM menu_items WHERE category = :categoryName")
+        fun getItemsByCategory(categoryName: String): Flow<List<MenuItem>>
+
         @Query("SELECT * FROM menu_items WHERE id = :id")
         fun getMenuItemById(id: Int): MenuItem?
     }

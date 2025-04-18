@@ -25,13 +25,13 @@ import com.example.sodv3203_final_project.R
 @Composable
 fun HomePageScreen(navController: NavController) {
     val context = LocalContext.current
-    val storeLocationDao = AppDatabase.getDatabase(context).storeLocationDao()
+    val menuCategoryDao = AppDatabase.getDatabase(context).menuCategoryDao()
 
     val homePageViewModel: HomePageViewModel = viewModel(
-        factory = HomePageViewModelFactory(storeLocationDao)
+        factory = HomePageViewModelFactory(menuCategoryDao)
     )
 
-    val storeLocations by homePageViewModel.storeLocations.collectAsState()
+    val menuCategories by homePageViewModel.menuCategories.collectAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -64,14 +64,16 @@ fun HomePageScreen(navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(storeLocations) { location ->
+                items(menuCategories) { category ->
                     Card(
                         shape = RoundedCornerShape(12.dp),
                         elevation = CardDefaults.cardElevation(6.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp)
                             .clickable {
-                                navController.navigate(NavigationRoutes.ProductPage)
+                                navController.navigate("${NavigationRoutes.ProductPageWithCategory}/${category.name}")
                             }
                     ) {
                         Row(
@@ -81,8 +83,8 @@ fun HomePageScreen(navController: NavController) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.timhortons_logo), // Replace with your location image
-                                contentDescription = "Store Image",
+                                painter = painterResource(id = R.drawable.timhortons_logo),
+                                contentDescription = "Category Image",
                                 modifier = Modifier
                                     .size(64.dp)
                                     .clip(RoundedCornerShape(8.dp))
@@ -92,14 +94,11 @@ fun HomePageScreen(navController: NavController) {
 
                             Column {
                                 Text(
-                                    text = location.name,
+                                    text = category.name,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
-                                Text(text = location.address)
-                                Text(text = "${location.city}, ${location.postalCode}")
-                                Text(text = "Phone: ${location.phoneNumber}")
-                                Text(text = "Open: 6:00 AM - 10:00 PM")
+                                Text(text = category.description)
                             }
                         }
                     }

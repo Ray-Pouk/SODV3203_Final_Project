@@ -18,10 +18,10 @@ import com.example.sodv3203_final_project.Data.Orders.OrderItemDao
         Order::class,
         OrderItem::class,
         OrderCustomization::class,
-        StoreLocation::class,
+        MenuCategory::class,
         Rating::class
     ],
-    version = 3,
+    version = 4,
 
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -30,7 +30,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun orderDao(): OrderDao
     abstract fun orderItemDao(): OrderItemDao
     abstract fun orderCustomizationDao(): OrderCustomizationDao
-    abstract fun storeLocationDao(): StoreLocationDao
+    abstract fun menuCategoryDao(): MenuCategoryDao
     abstract fun ratingDao(): RatingDao
 
     companion object {

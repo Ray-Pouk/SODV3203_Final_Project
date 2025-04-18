@@ -28,6 +28,18 @@ class ProductPageViewModel(
         fetchMenuItems()
     }
 
+    fun fetchMenuItemsByCategory(category: String) {
+        viewModelScope.launch {
+            try {
+                menuItemDao.getItemsByCategory(category).collectLatest { items ->
+                    _menuItems.value = items
+                }
+            } catch (e: Exception) {
+                Log.e("ProductPageViewModel", "Error fetching items by category", e)
+            }
+        }
+    }
+
     private fun fetchMenuItems() {
         viewModelScope.launch {
             try {
@@ -52,7 +64,7 @@ class ProductPageViewModel(
                         name = "Coffee",
                         description = "Fresh brewed coffee",
                         price = 2.49,
-                        category = "Drinks",
+                        category = "Beverages",
                         imageResId = R.drawable.placeholder
                     ),
                     MenuItem(

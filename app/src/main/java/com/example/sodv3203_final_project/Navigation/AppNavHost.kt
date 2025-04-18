@@ -55,8 +55,10 @@ fun AppNavHost(
             HomePageScreen(navController = navController)
         }
 
-        // Navigation to ProductPageScreen
-        composable(NavigationRoutes.ProductPage) {
+        composable(
+            route = "${NavigationRoutes.ProductPageWithCategory}/{category}",
+            arguments = listOf(navArgument("category") { type = NavType.StringType })
+        ) { backStackEntry ->
             val context = LocalContext.current
             val db = AppDatabase.getDatabase(context)
             val viewModel: ProductPageViewModel = viewModel(
@@ -65,7 +67,14 @@ fun AppNavHost(
                     db.orderCustomizationDao()
                 )
             )
-            ProductPageScreen(viewModel = viewModel, navController = navController)
+
+            val category = backStackEntry.arguments?.getString("category") ?: ""
+
+            LaunchedEffect(category) {
+                viewModel.fetchMenuItemsByCategory(category)
+            }
+
+            ProductPageScreen(viewModel = viewModel, navController = navController, categoryName = category)
         }
 
         composable(
