@@ -60,15 +60,16 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Room
-    implementation("androidx.room:room-runtime:2.5.2")
+    implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.navigation.runtime.android)
     implementation(libs.androidx.navigation.compose)
-    kapt("androidx.room:room-compiler:2.5.2")
-    implementation("androidx.room:room-ktx:2.5.2")
+    implementation(libs.firebase.crashlytics.buildtools)
+    kapt("androidx.room:room-compiler:2.7.0")
+    implementation(libs.androidx.room.ktx)
 
     // Coroutines and StateFlow
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4") // Coroutine support
-    implementation("androidx.compose.runtime:runtime:1.4.0") // Compose runtime (contains collectAsState)
+    implementation(libs.kotlinx.coroutines.android) // Coroutine support
+    implementation(libs.androidx.runtime) // Compose runtime (contains collectAsState)
 
     // Testing
     testImplementation(libs.junit)
@@ -80,5 +81,7 @@ dependencies {
     // Debug
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation (libs.gson)
 }
 

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.example.sodv3203_final_project.Data.Orders.Order
 import com.example.sodv3203_final_project.Data.Orders.OrderCustomization
 import com.example.sodv3203_final_project.Data.Orders.OrderCustomizationDao
@@ -21,9 +22,11 @@ import com.example.sodv3203_final_project.Data.Orders.OrderItemDao
         MenuCategory::class,
         Rating::class
     ],
-    version = 5,
+    version = 6,
 
 )
+
+@TypeConverters(Converters::class)  // Register the TypeConverter
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun menuItemDao(): MenuItemDao

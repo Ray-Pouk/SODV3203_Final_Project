@@ -1,5 +1,6 @@
 package com.example.sodv3203_final_project.Navigation
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -12,9 +13,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.sodv3203_final_project.Data.AppDatabase
-import com.example.sodv3203_final_project.Factory.CheckoutViewModelFactory
 import com.example.sodv3203_final_project.Factory.ProductPageViewModelFactory
-import com.example.sodv3203_final_project.Navigation.NavigationRoutes
+
 import com.example.sodv3203_final_project.ui.AddCard.AddCardScreen
 import com.example.sodv3203_final_project.ui.HomePage.HomePageScreen
 import com.example.sodv3203_final_project.ui.LoadingPage.LoadingPageScreen
@@ -30,6 +30,7 @@ import com.example.sodv3203_final_project.ui.checkout.CheckoutScreen
 import com.example.sodv3203_final_project.ui.checkout.CheckoutViewModel
 import kotlinx.coroutines.delay
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -94,8 +95,10 @@ fun AppNavHost(
                     db.orderCustomizationDao()
                 )
             )
+
             val menuItemId = backStackEntry.arguments?.getInt("menuItemId") ?: 0
-            val menuItem = viewModel.menuItems.collectAsState().value.find { it.id == menuItemId }
+            val menuItems by viewModel.menuItems.collectAsState()
+            val menuItem = menuItems.find { it.id == menuItemId }
 
             if (menuItem != null) {
                 ProductInsightScreen(
@@ -108,13 +111,15 @@ fun AppNavHost(
                         }
                     }
                 )
+            } else {
+                Text("Menu item not found.")
             }
         }
 
         composable(NavigationRoutes.LoginPage) {
             LoginPageScreen(
                 navController = navController,
-                viewModel = loginViewModel, // ✅ Inject the existing instance
+                viewModel = loginViewModel,
                 onLoginSuccess = {
                     navController.navigate(NavigationRoutes.HomePage)
                 },
@@ -125,37 +130,22 @@ fun AppNavHost(
         }
 
         composable(NavigationRoutes.Checkout) {
-            val context = LocalContext.current
-            val db = AppDatabase.getDatabase(context)
-
-            // Fetch DAOs for CheckoutViewModel
-            val orderItemDao = db.orderItemDao()
-            val menuItemDao = db.menuItemDao()
-            val orderDao = db.orderDao() // Add if needed
-
-            val viewModel: CheckoutViewModel = viewModel(
-                factory = CheckoutViewModelFactory(
-                    orderItemDao = orderItemDao,
-                    menuItemDao = menuItemDao,
-                )
-            )
-
-            val cartItems by viewModel.cartItems.collectAsState()  // Collect cart items from the ViewModel
+            val checkoutViewModel: CheckoutViewModel = viewModel()
+            val cartItems by checkoutViewModel.cartItems.collectAsState()
 
             CheckoutScreen(
                 navController = navController,
-                cartItems = cartItems,
                 onContinueClicked = {
-                    // Add the navigation to AddCard or another screen
                     navController.navigate(NavigationRoutes.AddCard)
                 }
             )
         }
 
-
         composable(NavigationRoutes.AddCard) {
+            val checkoutViewModel: CheckoutViewModel = viewModel()
             AddCardScreen(
                 onSubmit = { cardNumber, expiry, cvv ->
+                    // Assuming payment is successful, proceed to order confirmation screen
                     navController.navigate(NavigationRoutes.OrderConfirmation)
                 },
                 onSwitchToPaypal = {
@@ -163,9 +153,15 @@ fun AppNavHost(
                 },
                 onBackPressed = {
                     navController.popBackStack()
+                },
+                onPaymentSuccess = {
+                    checkoutViewModel.clearCart()
                 }
             )
         }
+
+
+
 
 
         composable(NavigationRoutes.OrderConfirmation) {
@@ -179,5 +175,10 @@ fun AppNavHost(
         }
 
     }
+}
+
+@Composable
+fun Text(s: String) {
+
 }
 

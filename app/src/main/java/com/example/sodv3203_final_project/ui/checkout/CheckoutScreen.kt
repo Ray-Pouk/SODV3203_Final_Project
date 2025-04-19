@@ -7,23 +7,32 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.sodv3203_final_project.Data.MenuItem
-import com.example.sodv3203_final_project.Navigation.NavigationRoutes
+import com.example.sodv3203_final_project.Data.Orders.CartManager
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckoutScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    cartItems: List<MenuItem> = listOf(),
     onContinueClicked: () -> Unit = {}
 ) {
-    val subtotal = cartItems.sumOf { it.price }
-    val tax = subtotal * 0.13  // 13% tax
+    // ViewModel no longer needs a factory
+    val checkoutViewModel: CheckoutViewModel = viewModel()
+
+    // Get current cart items from ViewModel
+    val cartItems by checkoutViewModel.cartItems.collectAsState()
+
+    // Totals
+    val subtotal = cartItems.sumOf { it.finalPrice * it.quantity }
+    val tax = subtotal * 0.13
     val total = subtotal + tax
 
     Column(
@@ -31,11 +40,10 @@ fun CheckoutScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Top App Bar
         TopAppBar(
             title = { Text("Checkout") },
             navigationIcon = {
-                IconButton(onClick = { navController.navigate(NavigationRoutes.HomePage) }) {
+                IconButton(onClick = { navController.navigateUp() }) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                 }
             }
@@ -47,7 +55,6 @@ fun CheckoutScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Cart items list
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -55,21 +62,50 @@ fun CheckoutScreen(
                     .padding(16.dp)
             ) {
                 cartItems.forEach { item ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(item.name)
-                        Text("$${"%.2f".format(item.price)}")
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("${item.name} x${item.quantity}")
+                            Text("$${"%.2f".format(item.finalPrice * item.quantity)}")
+                        }
+
+                        item.customizations.forEach { customization ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp, bottom = 2.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    "${customization.customizationName}: ${customization.customizationValue}",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                                Text(
+                                    "+$${"%.2f".format(customization.customizationPrice)}",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+
+                        if (item.instructions.isNotBlank()) {
+                            Text(
+                                "Instructions: ${item.instructions}",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                            )
+                        }
+
+                        Divider(modifier = Modifier.padding(vertical = 8.dp))
                     }
                 }
             }
 
             Spacer(Modifier.height(24.dp))
 
-            // Totals section
             Column {
                 Text("Subtotal: $${"%.2f".format(subtotal)}")
                 Text("Tax: $${"%.2f".format(tax)}")
@@ -79,9 +115,12 @@ fun CheckoutScreen(
                 )
             }
 
-            // Continue Button
             Button(
-                onClick = onContinueClicked,
+                onClick = {
+                    // Call CartManager.clearCart() when the user proceeds to payment
+                    CartManager.clearCart()
+                    onContinueClicked() // Continue to payment or other action
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),

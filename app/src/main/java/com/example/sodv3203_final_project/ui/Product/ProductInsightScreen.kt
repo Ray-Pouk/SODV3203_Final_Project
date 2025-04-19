@@ -14,6 +14,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sodv3203_final_project.Data.MenuItem
+import com.example.sodv3203_final_project.Data.Orders.CartItem
+import com.example.sodv3203_final_project.Data.Orders.CartManager
+import com.example.sodv3203_final_project.Data.Orders.OrderCustomization
 import com.example.sodv3203_final_project.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -152,8 +155,28 @@ fun ProductInsightScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
+            Text(text = menuItem.name) // Example of using menuItem
             Button(
                 onClick = {
+                    val cartItem = CartItem(
+                        menuItemId = menuItem.id,
+                        name = menuItem.name,
+                        description = menuItem.description,
+                        price = menuItem.price,
+                        quantity = 1,
+                        customizations = listOf(
+                            OrderCustomization(
+                                orderItemId = 0,
+                                customizationName = "Size",
+                                customizationValue = selectedOption,
+                                customizationPrice = sizeOffset
+                            )
+                        ),
+                        instructions = instructions,
+                        finalPrice = finalPrice
+                    )
+
+                    CartManager.addItem(cartItem)
                     onAddComplete()
                 },
                 modifier = Modifier.fillMaxWidth(),

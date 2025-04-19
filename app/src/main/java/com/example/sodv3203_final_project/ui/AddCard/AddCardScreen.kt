@@ -24,7 +24,8 @@ enum class PaymentMethod {
 fun AddCardScreen(
     onSubmit: (cardNumber: String, expiry: String, cvv: String) -> Unit,
     onSwitchToPaypal: () -> Unit,
-    onBackPressed: () -> Unit = {}
+    onBackPressed: () -> Unit = {},
+    onPaymentSuccess: () -> Unit // Added callback to handle cart clearing
 ) {
     var selectedMethod by remember { mutableStateOf(PaymentMethod.CREDIT_CARD) }
 
@@ -109,8 +110,12 @@ fun AddCardScreen(
                 onClick = {
                     if (selectedMethod == PaymentMethod.CREDIT_CARD) {
                         onSubmit(number, "$expMonth/$expYear", cvv)
+                        // After successful payment, clear the cart
+                        onPaymentSuccess() // Call to clear the cart after payment
                     } else {
                         onSwitchToPaypal()
+                        // After successful payment via PayPal, clear the cart
+                        onPaymentSuccess() // Call to clear the cart after payment
                     }
                 },
                 modifier = Modifier
