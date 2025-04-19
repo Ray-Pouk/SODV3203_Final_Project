@@ -25,8 +25,6 @@ fun OrderConfirmationScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Optional: Add a confirmation image/icon
-        // Image(painter = painterResource(id = R.drawable.checkmark), contentDescription = null)
 
         Text(
             text = "Order Confirmed!",

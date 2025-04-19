@@ -14,7 +14,7 @@ class LoadingPageViewModel : ViewModel() {
     init {
         viewModelScope.launch {
             repeat(100) {
-                delay(30)  // Slow down progress updates to ensure smooth visual feedback
+                delay(30)
                 _progress.value += 0.01f
             }
         }

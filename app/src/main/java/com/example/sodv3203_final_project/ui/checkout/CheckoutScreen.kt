@@ -115,9 +115,8 @@ fun CheckoutScreen(
 
             Button(
                 onClick = {
-                    // Call CartManager.clearCart() when the user proceeds to payment
                     CartManager.clearCart()
-                    onContinueClicked() // Continue to payment or other action
+                    onContinueClicked()
                 },
                 modifier = Modifier
                     .fillMaxWidth()

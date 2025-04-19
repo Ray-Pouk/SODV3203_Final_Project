@@ -53,7 +53,7 @@ fun AppNavHost(
         startDestination = NavigationRoutes.LoadingPage
     ) {
         composable(NavigationRoutes.LoadingPage) {
-            val loadingViewModel: LoadingPageViewModel = viewModel() // Use the correct ViewModel here
+            val loadingViewModel: LoadingPageViewModel = viewModel()
             LoadingPageScreen(viewModel = loadingViewModel, navController = navController)
         }
         composable(NavigationRoutes.RegisterPage) {
@@ -149,7 +149,6 @@ fun AppNavHost(
             val checkoutViewModel: CheckoutViewModel = viewModel()
             AddCardScreen(
                 onSubmit = { cardNumber, expiry, cvv ->
-                    // Assuming payment is successful, proceed to order confirmation screen
                     navController.navigate(NavigationRoutes.OrderConfirmation)
                 },
                 onSwitchToPaypal = {

@@ -108,7 +108,6 @@ fun HomePageScreen(navController: NavController) {
                 }
             }
 
-            // View Cart Button
             Button(
                 onClick = {
                     navController.navigate(NavigationRoutes.Checkout)

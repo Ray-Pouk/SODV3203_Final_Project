@@ -25,7 +25,7 @@ fun AddCardScreen(
     onSubmit: (cardNumber: String, expiry: String, cvv: String) -> Unit,
     onSwitchToPaypal: () -> Unit,
     onBackPressed: () -> Unit = {},
-    onPaymentSuccess: () -> Unit // Added callback to handle cart clearing
+    onPaymentSuccess: () -> Unit
 ) {
     var selectedMethod by remember { mutableStateOf(PaymentMethod.CREDIT_CARD) }
 
@@ -47,7 +47,6 @@ fun AddCardScreen(
                         }
                     }
                 )
-                // Full-width progress bar BELOW the AppBar
                 LinearProgressIndicator(
                     progress = 0.5f,
                     modifier = Modifier
@@ -110,12 +109,10 @@ fun AddCardScreen(
                 onClick = {
                     if (selectedMethod == PaymentMethod.CREDIT_CARD) {
                         onSubmit(number, "$expMonth/$expYear", cvv)
-                        // After successful payment, clear the cart
-                        onPaymentSuccess() // Call to clear the cart after payment
+                        onPaymentSuccess()
                     } else {
                         onSwitchToPaypal()
-                        // After successful payment via PayPal, clear the cart
-                        onPaymentSuccess() // Call to clear the cart after payment
+                        onPaymentSuccess()
                     }
                 },
                 modifier = Modifier

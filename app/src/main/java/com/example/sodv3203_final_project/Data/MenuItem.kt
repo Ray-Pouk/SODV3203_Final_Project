@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "menu_items")
 data class MenuItem(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,  // ← Add this line
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
     val description: String,
     val price: Double,

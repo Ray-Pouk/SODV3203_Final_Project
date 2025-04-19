@@ -33,14 +33,12 @@ fun ProductInsightScreen(
 
     val basePrice = menuItem.price
 
-    // Load sizes from DB on first composition
     LaunchedEffect(menuItem.id) {
-        viewModel.loadSizeOptions(menuItem.id) // Ensure we are calling the correct method
+        viewModel.loadSizeOptions(menuItem.id)
     }
 
-    val sizeOptions by viewModel.customizations.collectAsState() // Fetch customizations
+    val sizeOptions by viewModel.customizations.collectAsState()
 
-    // Fallback to default sizes if no DB data
     val options = if (sizeOptions.isNotEmpty()) {
         sizeOptions.map { it.customizationName }
     } else listOf("Small", "Medium", "Large")
@@ -155,7 +153,7 @@ fun ProductInsightScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Text(text = menuItem.name) // Example of using menuItem
+            Text(text = menuItem.name)
             Button(
                 onClick = {
                     val cartItem = CartItem(

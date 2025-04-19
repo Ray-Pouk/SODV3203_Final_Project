@@ -33,16 +33,13 @@ fun ProductPageScreen(
     navController: NavController,
     categoryName: String
 ) {
-    // Collect the menu items
     val menuItems by viewModel.menuItems.collectAsState()
 
-    // Log the category and menu items fetched
     Log.d("ProductPageScreen", "Category name received: $categoryName")
     Log.d("ProductPageScreen", "Menu items fetched: ${menuItems.size}")
 
     LaunchedEffect(categoryName) {
         viewModel.fetchMenuItemsByCategory(categoryName)
-        // Log the fetch call
         Log.d("ProductPageScreen", "Fetching menu items for category: $categoryName")
     }
 
@@ -54,7 +51,7 @@ fun ProductPageScreen(
                         Image(
                             painter = painterResource(id = R.drawable.timhortons_logo),
                             contentDescription = "Tim Hortons Logo",
-                            modifier = Modifier.height(72.dp) // Adjust size as needed
+                            modifier = Modifier.height(72.dp)
                         )
                     }
                 },
@@ -84,7 +81,6 @@ fun ProductPageScreen(
                 .fillMaxSize()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            // Log when each item is being listed
             items(menuItems) { item ->
                 Log.d("ProductPageScreen", "Displaying menu item: ${item.name}")
 

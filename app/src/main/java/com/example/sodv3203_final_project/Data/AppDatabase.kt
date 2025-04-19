@@ -27,7 +27,7 @@ import com.example.sodv3203_final_project.Data.Orders.OrderItemDao
 
 )
 
-@TypeConverters(Converters::class)  // Register the TypeConverter
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun menuItemDao(): MenuItemDao
@@ -47,7 +47,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).fallbackToDestructiveMigration() // Optional: Use this for migrations (if you change your schema)
+                ).fallbackToDestructiveMigration()
                     .build()
 
                 INSTANCE = instance

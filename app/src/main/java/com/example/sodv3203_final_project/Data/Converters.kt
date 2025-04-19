@@ -10,13 +10,13 @@ class Converters {
     @TypeConverter
     fun fromCustomizations(customizations: List<OrderCustomization>?): String? {
         val gson = Gson()
-        return gson.toJson(customizations) // Convert List<OrderCustomization> to JSON string
+        return gson.toJson(customizations)
     }
 
     @TypeConverter
     fun toCustomizations(customizationsJson: String?): List<OrderCustomization>? {
         val gson = Gson()
         val listType = object : TypeToken<List<OrderCustomization>>() {}.type
-        return gson.fromJson(customizationsJson, listType) // Convert JSON string back to List<OrderCustomization>
+        return gson.fromJson(customizationsJson, listType)
     }
 }

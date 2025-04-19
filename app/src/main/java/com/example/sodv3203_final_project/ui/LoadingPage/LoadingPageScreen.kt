@@ -22,15 +22,14 @@ import com.example.sodv3203_final_project.ui.theme.TimsYellow
 @Composable
 fun LoadingPageScreen(
     navController: NavController,
-    viewModel: LoadingPageViewModel // Use the LoadingPageViewModel
+    viewModel: LoadingPageViewModel
 ) {
     val progress by viewModel.progress.collectAsState()
 
-    // Navigate to the LoginPage once the progress reaches 100%
     LaunchedEffect(progress) {
         if (progress >= 0.99f) {
             navController.navigate(NavigationRoutes.LoginPage) {
-                popUpTo("loading") { inclusive = true } // Remove LoadingPage from the back stack
+                popUpTo("loading") { inclusive = true }
             }
         }
     }
@@ -38,7 +37,7 @@ fun LoadingPageScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(TimsRed)  // Set the background color to TimsRed
+            .background(TimsRed)
             .padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -52,13 +51,12 @@ fun LoadingPageScreen(
                 .padding(bottom = 16.dp)
         )
 
-        // Circular progress indicator with TimsYellow color
         CircularProgressIndicator(
             progress = progress,
             modifier = Modifier
                 .size(100.dp)
                 .padding(16.dp),
-            color = TimsYellow,  // Set indicator color to TimsYellow
+            color = TimsYellow,
             strokeWidth = 8.dp
         )
 
@@ -66,7 +64,7 @@ fun LoadingPageScreen(
 
         Text(
             text = "Loading...",
-            color = TimsYellow,  // Set text color to TimsYellow
+            color = TimsYellow,
             style = MaterialTheme.typography.bodyLarge
         )
     }

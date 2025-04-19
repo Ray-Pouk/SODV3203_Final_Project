@@ -28,7 +28,6 @@ class LoginPageViewModel(private val userDao: UserDao) : ViewModel() {
     private val _currentUserId = MutableStateFlow<Int?>(null)
     val currentUserId: StateFlow<Int?> get() = _currentUserId
 
-    // Insert a dummy user (for testing purposes)
     init {
         viewModelScope.launch(Dispatchers.IO) {
             userDao.insertDummyUser()
@@ -45,16 +44,13 @@ class LoginPageViewModel(private val userDao: UserDao) : ViewModel() {
 
     fun onLoginClick() {
         viewModelScope.launch {
-            // Perform database query off the main thread
             val user = getUserByEmail(_email.value)
 
             if (user != null && user.password == _password.value) {
-                // Successful login
                 _loginSuccess.value = true
-                _loginMessage.value = ""  // Clear any previous error message
-                _currentUserId.value = user.userId // Save the logged-in user's ID
+                _loginMessage.value = ""
+                _currentUserId.value = user.userId
             } else {
-                // Invalid credentials
                 Log.d("LoginViewModel", "Invalid email or password")
                 _loginSuccess.value = false
                 _loginMessage.value = "Incorrect email or password."
@@ -62,10 +58,8 @@ class LoginPageViewModel(private val userDao: UserDao) : ViewModel() {
         }
     }
 
-    // Function to run the database query off the main thread
     private suspend fun getUserByEmail(email: String): User? {
         return withContext(Dispatchers.IO) {
-            // Perform the database query in a background thread
             userDao.getUserByEmail(email)
         }
     }

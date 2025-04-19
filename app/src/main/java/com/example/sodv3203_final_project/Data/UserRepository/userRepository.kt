@@ -8,10 +8,10 @@ class UserRepository(private val userDao: UserDao) {
     suspend fun registerUser(fullName: String, email: String, password: String): Boolean {
         return try {
             val user = User(fullName = fullName, email = email, password = password)
-            userDao.insertUser(user)  // This just inserts the user; no return value to check
-            true  // If no exception occurs, return true
+            userDao.insertUser(user)
+            true
         } catch (e: Exception) {
-            false  // If there is an exception, return false
+            false
         }
     }
 }

@@ -51,7 +51,6 @@ fun LoginPageScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Logo
         Image(
             painter = painterResource(id = R.drawable.timhortons_logo),
             contentDescription = "Tim Hortons Logo",
@@ -69,7 +68,7 @@ fun LoginPageScreen(
             value = email,
             onValueChange = {
                 email = it
-                viewModel.onEmailChange(it) // Update ViewModel's email state
+                viewModel.onEmailChange(it)
             },
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
@@ -82,7 +81,7 @@ fun LoginPageScreen(
             value = password,
             onValueChange = {
                 password = it
-                viewModel.onPasswordChange(it) // Update ViewModel's password state
+                viewModel.onPasswordChange(it)
             },
             label = { Text("Password") },
             visualTransformation = PasswordVisualTransformation(),
@@ -94,7 +93,7 @@ fun LoginPageScreen(
         // Login Button
         Button(
             onClick = {
-                viewModel.onLoginClick() // Trigger login action in ViewModel
+                viewModel.onLoginClick()
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
@@ -112,7 +111,6 @@ fun LoginPageScreen(
             Text("Don't have an account? Register", color = TimsRed)
         }
 
-        // Display login message if there is one (e.g., error)
         if (loginMessage.isNotEmpty()) {
             Text(loginMessage, color = MaterialTheme.colorScheme.error)
         }
