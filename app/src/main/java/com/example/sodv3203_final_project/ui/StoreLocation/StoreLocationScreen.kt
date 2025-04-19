@@ -148,7 +148,7 @@ fun StoreLocationScreen(
             }
 
             item {
-                Spacer(modifier = Modifier.height(80.dp)) // Brain had stopped working for 20mins *it look me 20 mins*
+                Spacer(modifier = Modifier.height(80.dp))
             }
         }
     }

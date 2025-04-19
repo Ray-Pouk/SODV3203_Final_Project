@@ -33,7 +33,6 @@ fun RegisterPageScreen(
     val email by remember { viewModel.email }
     val password by remember { viewModel.password }
 
-    // Collect the state from the ViewModel
     val registerState by viewModel.registerState.collectAsState(RegisterPageViewModel.RegisterState.Idle)
 
     Column(

@@ -19,11 +19,9 @@ class RegisterPageViewModel(application: Application) : AndroidViewModel(applica
     val email = mutableStateOf("")
     val password = mutableStateOf("")
 
-    // Use MutableStateFlow and StateFlow for registerState
     private val _registerState = MutableStateFlow<RegisterState>(RegisterState.Idle)
     val registerState: StateFlow<RegisterState> = _registerState
 
-    // Get UserDao from the database
     private val userDao: UserDao = AppDatabase.getDatabase(application).userDao()
 
     private val repository = UserRepository(userDao)
@@ -46,7 +44,6 @@ class RegisterPageViewModel(application: Application) : AndroidViewModel(applica
                 val result = withContext(Dispatchers.IO) {
                     repository.registerUser(fullName.value, email.value, password.value)
                 }
-                // Use Main context to update UI
                 withContext(Dispatchers.Main) {
                     if (result) {
                         _registerState.value = RegisterState.Success("Registration Successful!")

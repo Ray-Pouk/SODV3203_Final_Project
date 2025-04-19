@@ -11,7 +11,6 @@ import com.example.sodv3203_final_project.Navigation.AppNavHost
 import com.example.sodv3203_final_project.ui.LoginPage.LoginPageViewModel
 import com.example.sodv3203_final_project.ui.theme.SODV3203_Final_ProjectTheme
 
-// MainActivity.kt (or wherever you're calling AppNavHost)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +27,7 @@ class MainActivity : ComponentActivity() {
 
                 AppNavHost(
                     navController = navController,
-                    loginViewModel = loginViewModel // ViewModel is passed properly
+                    loginViewModel = loginViewModel
                 )
             }
         }
