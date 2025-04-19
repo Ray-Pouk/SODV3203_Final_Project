@@ -1,3 +1,5 @@
+package com.example.sodv3203_final_project.ui.checkout
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,7 +23,7 @@ fun CheckoutScreen(
     onContinueClicked: () -> Unit = {}
 ) {
     val subtotal = cartItems.sumOf { it.price }
-    val tax = subtotal * 0.13  // Example: 13% tax rate
+    val tax = subtotal * 0.13  // 13% tax
     val total = subtotal + tax
 
     Column(
@@ -29,7 +31,7 @@ fun CheckoutScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Top App Bar with back arrow
+        // Top App Bar
         TopAppBar(
             title = { Text("Checkout") },
             navigationIcon = {
@@ -45,47 +47,41 @@ fun CheckoutScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
-                Spacer(Modifier.height(8.dp))
-
-                // Item list
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White, shape = RoundedCornerShape(12.dp))
-                        .padding(16.dp)
-                ) {
-                    cartItems.forEach { item ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(item.name)
-                            Text("$${item.price}")
-                        }
+            // Cart items list
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White, shape = RoundedCornerShape(12.dp))
+                    .padding(16.dp)
+            ) {
+                cartItems.forEach { item ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(item.name)
+                        Text("$${"%.2f".format(item.price)}")
                     }
                 }
+            }
 
-                Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(24.dp))
 
-                // Totals
-                Column {
-                    Text("Subtotal: $${"%.2f".format(subtotal)}")
-                    Text("Tax: $${"%.2f".format(tax)}")
-                    Text(
-                        "Total: $${"%.2f".format(total)}",
-                        style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.secondary)
-                    )
-                }
+            // Totals section
+            Column {
+                Text("Subtotal: $${"%.2f".format(subtotal)}")
+                Text("Tax: $${"%.2f".format(tax)}")
+                Text(
+                    "Total: $${"%.2f".format(total)}",
+                    style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.secondary)
+                )
             }
 
             // Continue Button
             Button(
-                onClick = {
-                    navController.navigate(NavigationRoutes.AddCard)
-                },
+                onClick = onContinueClicked,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),

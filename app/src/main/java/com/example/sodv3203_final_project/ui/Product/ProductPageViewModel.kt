@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class ProductPageViewModel(
     private val menuItemDao: MenuItemDao,
-    private val customizationDao: OrderCustomizationDao
+    private val customizationDao: OrderCustomizationDao,
 ) : ViewModel() {
 
     private val _menuItems = MutableStateFlow<List<MenuItem>>(emptyList())
@@ -89,7 +89,6 @@ class ProductPageViewModel(
         }
     }
 
-    // 👉 Load customizations (sizes) for a given menu item
     fun loadSizeOptions(menuItemId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {

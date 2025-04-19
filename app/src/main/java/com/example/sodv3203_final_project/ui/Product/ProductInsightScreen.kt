@@ -22,7 +22,7 @@ fun ProductInsightScreen(
     menuItem: MenuItem,
     viewModel: ProductPageViewModel,
     onBack: () -> Unit,
-    onAddComplete: () -> Unit // ⬅️ new
+    onAddComplete: () -> Unit
 ) {
     var selectedOption by remember { mutableStateOf("Medium") }
     var instructions by remember { mutableStateOf("") }
@@ -32,10 +32,10 @@ fun ProductInsightScreen(
 
     // Load sizes from DB on first composition
     LaunchedEffect(menuItem.id) {
-        viewModel.loadSizeOptions(menuItem.id)
+        viewModel.loadSizeOptions(menuItem.id) // Ensure we are calling the correct method
     }
 
-    val sizeOptions by viewModel.customizations.collectAsState()
+    val sizeOptions by viewModel.customizations.collectAsState() // Fetch customizations
 
     // Fallback to default sizes if no DB data
     val options = if (sizeOptions.isNotEmpty()) {
@@ -167,7 +167,3 @@ fun ProductInsightScreen(
         }
     }
 }
-
-
-
-

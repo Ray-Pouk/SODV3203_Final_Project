@@ -9,6 +9,7 @@ object NavigationRoutes {
     const val ProductInsight = "productInsight"
     const val Checkout = "checkout"
     const val AddCard = "add_card"
+    const val OrderConfirmation = "order_confirmation"
 
     fun productPageWithCategory(categoryName: String) = "product_page/$categoryName"
 

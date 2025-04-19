@@ -46,11 +46,6 @@ fun ProductPageScreen(
         Log.d("ProductPageScreen", "Fetching menu items for category: $categoryName")
     }
 
-    LaunchedEffect(categoryName) {
-        Log.d("ProductPageScreen", "Category received: $categoryName")
-        viewModel.fetchMenuItemsByCategory(categoryName)
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(

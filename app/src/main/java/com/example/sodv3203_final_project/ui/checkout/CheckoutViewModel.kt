@@ -1,9 +1,13 @@
+package com.example.sodv3203_final_project.ui.checkout
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sodv3203_final_project.Data.Orders.OrderItemDao
 import com.example.sodv3203_final_project.Data.MenuItem
 import com.example.sodv3203_final_project.Data.MenuItemDao
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -12,35 +16,35 @@ class CheckoutViewModel(
     private val menuItemDao: MenuItemDao
 ) : ViewModel() {
 
-    private val _cartItems = mutableListOf<MenuItem>()
-    val cartItems: List<MenuItem> get() = _cartItems
+    private val _cartItems = MutableStateFlow<List<MenuItem>>(emptyList())
+    val cartItems: StateFlow<List<MenuItem>> get() = _cartItems
 
     init {
-        loadCartItems()
-    }
-
-    private fun loadCartItems() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val orderItems = orderItemDao.getOrderItemsByOrderId(orderId = 1) // Replace with dynamic order ID later
-            val tempCartItems = mutableListOf<MenuItem>()
-
-            for (orderItem in orderItems) {
-                val menuItem = menuItemDao.getMenuItemById(orderItem.itemId)
-                if (menuItem != null) {
-                    repeat(orderItem.quantity) {
-                        tempCartItems.add(menuItem)
-                    }
-                }
-            }
-
-            withContext(Dispatchers.Main) {
-                _cartItems.clear()
-                _cartItems.addAll(tempCartItems)
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                loadCartItems()
             }
         }
     }
 
+    // Load cart items based on the current user's order
+    private suspend fun loadCartItems() {
+        val orderItems = orderItemDao.getOrderItemsByOrderId(orderId = 1)
+
+        val menuItems = mutableListOf<MenuItem>()
+        for (orderItem in orderItems) {
+            val menuItem = menuItemDao.getMenuItemById(orderItem.itemId)
+            if (menuItem != null) {
+                repeat(orderItem.quantity) {
+                    menuItems.add(menuItem)
+                }
+            }
+        }
+
+        _cartItems.value = menuItems
+    }
+
     fun getCartTotal(): Double {
-        return _cartItems.sumOf { it.price }
+        return _cartItems.value.sumOf { it.price }
     }
 }

@@ -23,9 +23,9 @@ import com.example.sodv3203_final_project.ui.theme.TimsCream
 @Composable
 fun LoginPageScreen(
     navController: NavController,
-    viewModel: LoginPageViewModel, // ✅ Accept ViewModel from AppNavHost
-    onLoginSuccess: () -> Unit = {}, // Callback when login is successful
-    onRegisterClicked: () -> Unit = {} // Callback for Register screen navigation
+    viewModel: LoginPageViewModel,
+    onLoginSuccess: () -> Unit = {},
+    onRegisterClicked: () -> Unit = {}
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
