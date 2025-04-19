@@ -1,16 +1,13 @@
 package com.example.sodv3203_final_project.ui.OrderConfirm
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.sodv3203_final_project.R
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.sodv3203_final_project.ui.theme.SODV3203_Final_ProjectTheme
 
@@ -56,10 +53,3 @@ fun OrderConfirmationScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun OrderConfirmationPreview() {
-    SODV3203_Final_ProjectTheme {
-        OrderConfirmationScreen()
-    }
-}

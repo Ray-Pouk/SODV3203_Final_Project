@@ -25,12 +25,12 @@ class ProductPageViewModel(
 
     init {
         insertDummyData()
-        fetchMenuItems()
     }
 
     fun fetchMenuItemsByCategory(category: String) {
         viewModelScope.launch {
             try {
+                _menuItems.value = emptyList()
                 menuItemDao.getItemsByCategory(category).collectLatest { items ->
                     _menuItems.value = items
                 }
