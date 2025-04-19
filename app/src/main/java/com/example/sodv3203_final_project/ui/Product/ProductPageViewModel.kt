@@ -40,10 +40,9 @@ class ProductPageViewModel(
         }
     }
 
-    private fun fetchMenuItems() {
+    fun fetchMenuItems() {
         viewModelScope.launch {
             try {
-                Log.d("ProductPageViewModel", "Fetching menu items from database")
                 menuItemDao.getAllMenuItems().collectLatest { items ->
                     Log.d("ProductPageViewModel", "Fetched ${items.size} items: $items")
                     _menuItems.value = items
