@@ -20,9 +20,10 @@ import com.example.sodv3203_final_project.Data.Orders.OrderItemDao
         OrderItem::class,
         OrderCustomization::class,
         MenuCategory::class,
-        Rating::class
+        Rating::class,
+        Store::class
     ],
-    version = 6,
+    version = 7,
 
 )
 
@@ -35,6 +36,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun orderCustomizationDao(): OrderCustomizationDao
     abstract fun menuCategoryDao(): MenuCategoryDao
     abstract fun ratingDao(): RatingDao
+    abstract fun storeDao(): StoreDao
 
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null

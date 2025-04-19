@@ -10,6 +10,7 @@ object NavigationRoutes {
     const val Checkout = "checkout"
     const val AddCard = "add_card"
     const val OrderConfirmation = "order_confirmation"
+    const val StoreLocation = "store_location"
 
     fun productPageWithCategory(categoryName: String) = "product_page/$categoryName"
 

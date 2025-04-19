@@ -42,7 +42,6 @@ fun HomePageScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            // Main content (LazyColumn with categories)
             LazyColumn(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -51,7 +50,6 @@ fun HomePageScreen(navController: NavController) {
                     .fillMaxWidth()
             ) {
                 item {
-                    // Banner
                     Image(
                         painter = painterResource(id = R.drawable.timhortons_logo),
                         contentDescription = "Promotional Banner",

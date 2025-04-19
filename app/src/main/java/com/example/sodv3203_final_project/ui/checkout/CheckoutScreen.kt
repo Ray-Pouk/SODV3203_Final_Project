@@ -24,13 +24,11 @@ fun CheckoutScreen(
     modifier: Modifier = Modifier,
     onContinueClicked: () -> Unit = {}
 ) {
-    // ViewModel no longer needs a factory
+
     val checkoutViewModel: CheckoutViewModel = viewModel()
 
-    // Get current cart items from ViewModel
     val cartItems by checkoutViewModel.cartItems.collectAsState()
 
-    // Totals
     val subtotal = cartItems.sumOf { it.finalPrice * it.quantity }
     val tax = subtotal * 0.13
     val total = subtotal + tax

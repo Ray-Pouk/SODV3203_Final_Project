@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.sodv3203_final_project.Navigation.NavigationRoutes
 import com.example.sodv3203_final_project.R
 import com.example.sodv3203_final_project.ui.theme.TimsRed
 import com.example.sodv3203_final_project.ui.theme.TimsCream
@@ -34,12 +35,11 @@ fun LoginPageScreen(
     val loginSuccess by viewModel.loginSuccess.collectAsState()
     val currentUserId by viewModel.currentUserId.collectAsState()
 
-    // Navigate to Home page when login is successful
     LaunchedEffect(loginSuccess) {
         if (loginSuccess) {
-            Log.d("LoginPageScreen", "Navigating to home. Current User ID: $currentUserId")
-            onLoginSuccess()
-            navController.navigate("home") // Adjust route name as per your app
+            navController.navigate(NavigationRoutes.StoreLocation) {
+                popUpTo(NavigationRoutes.LoadingPage) { inclusive = true }
+            }
         }
     }
 

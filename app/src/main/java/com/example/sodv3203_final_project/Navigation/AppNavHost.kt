@@ -1,6 +1,7 @@
 package com.example.sodv3203_final_project.Navigation
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,6 +27,7 @@ import com.example.sodv3203_final_project.ui.Product.ProductInsightScreen
 import com.example.sodv3203_final_project.ui.Product.ProductPageScreen
 import com.example.sodv3203_final_project.ui.Product.ProductPageViewModel
 import com.example.sodv3203_final_project.ui.RegisterPage.RegisterPageScreen
+import com.example.sodv3203_final_project.ui.StoreLocation.StoreLocationScreen
 import com.example.sodv3203_final_project.ui.checkout.CheckoutScreen
 import com.example.sodv3203_final_project.ui.checkout.CheckoutViewModel
 import kotlinx.coroutines.delay
@@ -77,8 +79,10 @@ fun AppNavHost(
             val category = backStackEntry.arguments?.getString("category") ?: ""
 
             LaunchedEffect(category) {
+                Log.d("ProductPageNav", "Category: $category")
                 viewModel.fetchMenuItemsByCategory(category)
             }
+
 
             ProductPageScreen(viewModel = viewModel, navController = navController, categoryName = category)
         }
@@ -160,10 +164,6 @@ fun AppNavHost(
             )
         }
 
-
-
-
-
         composable(NavigationRoutes.OrderConfirmation) {
             OrderConfirmationScreen(
                 onReturnHome = {
@@ -172,6 +172,10 @@ fun AppNavHost(
                     }
                 }
             )
+        }
+
+        composable(NavigationRoutes.StoreLocation) {
+            StoreLocationScreen(navController = navController)
         }
 
     }

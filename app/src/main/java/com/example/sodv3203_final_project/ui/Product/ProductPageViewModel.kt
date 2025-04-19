@@ -18,7 +18,7 @@ class ProductPageViewModel(
 ) : ViewModel() {
 
     private val _menuItems = MutableStateFlow<List<MenuItem>>(emptyList())
-    val menuItems: StateFlow<List<MenuItem>> = _menuItems.asStateFlow()
+    val menuItems: StateFlow<List<MenuItem>> = _menuItems
 
     private val _customizations = MutableStateFlow<List<OrderCustomization>>(emptyList())
     val customizations: StateFlow<List<OrderCustomization>> = _customizations.asStateFlow()
