@@ -15,6 +15,7 @@ import com.example.sodv3203_final_project.Data.MenuItem
 import com.example.sodv3203_final_project.Data.Orders.CartItem
 import com.example.sodv3203_final_project.Data.Orders.CartManager
 import com.example.sodv3203_final_project.Data.Orders.OrderCustomization
+import com.example.sodv3203_final_project.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,14 +29,21 @@ fun ProductInsightScreen(
     var instructions by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
 
-    val basePrice = menuItem.price
-
-    LaunchedEffect(menuItem.id) {
-        viewModel.loadSizeOptions(menuItem.id)
+    // Check if this item is already in the cart
+    val itemInCart = remember(CartManager.cartItems.collectAsState().value) {
+        CartManager.getAllItems().any { it.menuItemId == menuItem.id }
     }
 
-    val sizeOptions by viewModel.customizations.collectAsState()
+    val basePrice = menuItem.price
 
+    // Load sizes from DB on first composition
+    LaunchedEffect(menuItem.id) {
+        viewModel.loadSizeOptions(menuItem.id) // Ensure we are calling the correct method
+    }
+
+    val sizeOptions by viewModel.customizations.collectAsState() // Fetch customizations
+
+    // Fallback to default sizes if no DB data
     val options = if (sizeOptions.isNotEmpty()) {
         sizeOptions.map { it.customizationName }
     } else listOf("Small", "Medium", "Large")
@@ -150,37 +158,56 @@ fun ProductInsightScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Text(text = menuItem.name)
-            Button(
-                onClick = {
-                    val cartItem = CartItem(
-                        menuItemId = menuItem.id,
-                        name = menuItem.name,
-                        description = menuItem.description,
-                        price = menuItem.price,
-                        quantity = 1,
-                        customizations = listOf(
-                            OrderCustomization(
-                                orderItemId = 0,
-                                customizationName = "Size",
-                                customizationValue = selectedOption,
-                                customizationPrice = sizeOffset
-                            )
-                        ),
-                        instructions = instructions,
-                        finalPrice = finalPrice
-                    )
-
-                    CartManager.addItem(cartItem)
-                    onAddComplete()
-                },
+            // Two buttons side by side - Add to Order and Remove from Cart
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Add to Order - $${"%.2f".format(finalPrice)}")
+                Button(
+                    onClick = {
+                        val cartItem = CartItem(
+                            menuItemId = menuItem.id,
+                            name = menuItem.name,
+                            description = menuItem.description,
+                            price = menuItem.price,
+                            quantity = 1,
+                            customizations = listOf(
+                                OrderCustomization(
+                                    orderItemId = 0,
+                                    customizationName = "Size",
+                                    customizationValue = selectedOption,
+                                    customizationPrice = sizeOffset
+                                )
+                            ),
+                            instructions = instructions,
+                            finalPrice = finalPrice
+                        )
+
+                        CartManager.addItem(cartItem)
+                        onAddComplete()
+                    },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Text("Add to Order - $${"%.2f".format(finalPrice)}")
+                }
+
+                if (itemInCart) {
+                    OutlinedButton(
+                        onClick = {
+                            CartManager.removeItemById(menuItem.id)
+                        },
+                        modifier = Modifier.width(120.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text("Remove")
+                    }
+                }
             }
         }
     }

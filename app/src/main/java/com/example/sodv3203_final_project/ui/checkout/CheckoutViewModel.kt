@@ -10,10 +10,12 @@ import kotlinx.coroutines.launch
 
 class CheckoutViewModel : ViewModel() {
 
+
     private val _cartItems = MutableStateFlow(CartManager.cartItems.value)
     val cartItems: StateFlow<List<CartItem>> = _cartItems
 
     init {
+
         viewModelScope.launch {
             CartManager.cartItems.collect { items ->
                 _cartItems.value = items
@@ -23,5 +25,18 @@ class CheckoutViewModel : ViewModel() {
 
     fun clearCart() {
         CartManager.clearCart()
+    }
+
+
+    fun removeCartItem(index: Int) {
+        CartManager.removeItem(index)
+    }
+
+    fun removeCartItem(item: CartItem) {
+        CartManager.removeItem(item)
+    }
+
+    fun removeCartItemById(menuItemId: Int) {
+        CartManager.removeItemById(menuItemId)
     }
 }

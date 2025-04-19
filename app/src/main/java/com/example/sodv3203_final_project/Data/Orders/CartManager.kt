@@ -12,7 +12,25 @@ object CartManager {
     }
 
     fun removeItem(index: Int) {
-        _cartItems.value = _cartItems.value.toMutableList().apply { removeAt(index) }
+        if (index >= 0 && index < _cartItems.value.size) {
+            _cartItems.value = _cartItems.value.toMutableList().apply { removeAt(index) }
+        }
+    }
+
+
+    fun removeItem(item: CartItem) {
+        val index = _cartItems.value.indexOf(item)
+        if (index >= 0) {
+            removeItem(index)
+        }
+    }
+
+
+    fun removeItemById(menuItemId: Int) {
+        val index = _cartItems.value.indexOfFirst { it.menuItemId == menuItemId }
+        if (index >= 0) {
+            removeItem(index)
+        }
     }
 
     fun clearCart() {
@@ -24,5 +42,7 @@ object CartManager {
     }
 
     fun getAllItems(): List<CartItem> = _cartItems.value
-}
 
+
+    fun getItemCount(): Int = _cartItems.value.size
+}

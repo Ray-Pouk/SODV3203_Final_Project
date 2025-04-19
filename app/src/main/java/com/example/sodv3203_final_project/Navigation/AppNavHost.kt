@@ -199,6 +199,8 @@ fun AppNavHost(
 
 @Composable
 fun Text(s: String) {
-
+    androidx.compose.material3.Text(
+        text = s,
+        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+    )
 }
-
